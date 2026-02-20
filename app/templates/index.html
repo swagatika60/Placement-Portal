@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+
+{% block title %}Home - Placement Preparation Portal{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero">
+    <div class="hero-content">
+        <h1>Welcome to Placement Portal</h1>
+        <p>Your one-stop destination for placement preparation. Practice aptitude, technical questions, and ace your interviews with confidence.</p>
+        <div class="hero-buttons">
+            {% if current_user.is_authenticated %}
+                <a href="{{ url_for('main.dashboard') }}" class="btn btn-primary">Go to Dashboard</a>
+                <a href="{{ url_for('quiz.list_categories') }}" class="btn btn-secondary">Start Practicing</a>
+            {% else %}
+                <a href="{{ url_for('auth.register') }}" class="btn btn-primary">Get Started Free</a>
+                <a href="{{ url_for('auth.login') }}" class="btn btn-secondary">Login</a>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="features">
+    <div class="container">
+        <div class="section-title">
+            <h2>Why Choose Our Portal?</h2>
+            <p>Comprehensive tools to help you succeed in your placement journey</p>
+        </div>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon-svg">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg>
+                </div>
+                <h3>Aptitude Tests</h3>
+                <p>Practice quantitative, logical reasoning, and verbal ability questions that are commonly asked in placement exams.</p>
+                <a href="{{ url_for('quiz.list_categories') }}" class="btn btn-outline">Start Practice</a>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon-svg">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+                </div>
+                <h3>Technical MCQs</h3>
+                <p>Master technical concepts with our extensive collection of MCQs on C, Python, DBMS, Operating Systems, and more.</p>
+                <a href="{{ url_for('quiz.list_categories') }}" class="btn btn-outline">Explore Topics</a>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon-svg">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+                </div>
+                <h3>Study Resources</h3>
+                <p>Access curated study materials, interview tips, HR questions, and coding resources all in one place.</p>
+                <a href="{{ url_for('main.resources') }}" class="btn btn-outline">View Resources</a>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon-svg">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                </div>
+                <h3>Interview Tips</h3>
+                <p>Get expert tips and strategies to crack technical and HR interviews with confidence.</p>
+                <a href="{{ url_for('main.resources') }}" class="btn btn-outline">Learn More</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Stats Section -->
+<section class="stats-section">
+    <div class="container">
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number">1000+</div>
+                <div class="stat-label">Practice Questions</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">5000+</div>
+                <div class="stat-label">Students Enrolled</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">95%</div>
+                <div class="stat-label">Success Rate</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">50+</div>
+                <div class="stat-label">Topics Covered</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="cta-section">
+    <div class="container">
+        <h2>Ready to Start Your Preparation?</h2>
+        <p>Join thousands of students who have successfully cracked their placement interviews using our platform.</p>
+        {% if not current_user.is_authenticated %}
+            <a href="{{ url_for('auth.register') }}" class="btn btn-white">Register Now - It's Free!</a>
+        {% else %}
+            <a href="{{ url_for('quiz.list_categories') }}" class="btn btn-white">Start a Quiz</a>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

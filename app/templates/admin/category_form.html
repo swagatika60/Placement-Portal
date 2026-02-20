@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block title %}{% if category %}Edit Category{% else %}Add Category{% endif %} - Admin Dashboard{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="form-container" style="max-width: 600px;">
+        <div class="form-card">
+            <div class="form-header">
+                <h2>{% if category %}Edit Category{% else %}Add New Category{% endif %}</h2>
+                <p>{% if category %}Update category details{% else %}Create a new quiz category{% endif %}</p>
+            </div>
+
+            <form action="{% if category %}{{ url_for('admin.edit_category', category_id=category.id) }}{% else %}{{ url_for('admin.create_category') }}{% endif %}" method="POST">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                <div class="form-group">
+                    <label for="name">Category Name *</label>
+                    <input type="text" id="name" name="name" class="form-control" placeholder="e.g., Quantitative Aptitude" value="{{ category.name if category else '' }}" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="type">Category Type *</label>
+                    <select id="type" name="type" class="form-control" required>
+                        <option value="">Select type</option>
+                        <option value="aptitude" {% if category and category.type == 'aptitude' %}selected{% endif %}>Aptitude</option>
+                        <option value="technical" {% if category and category.type == 'technical' %}selected{% endif %}>Technical</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="description">Description</label>
+                    <textarea id="description" name="description" class="form-control" rows="3" placeholder="Brief description of this category">{{ category.description if category else '' }}</textarea>
+                </div>
+
+                <div style="display: flex; gap: 1rem;">
+                    <button type="submit" class="btn btn-success btn-block">{% if category %}Update Category{% else %}Create Category{% endif %}</button>
+                    <a href="{{ url_for('admin.list_categories') }}" class="btn btn-outline" style="text-decoration: none; text-align: center;">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

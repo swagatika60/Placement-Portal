@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block title %}Question {{ question_num }} - {{ category.name }}{% endblock %}
+
+{% block content %}
+<div class="container quiz-container">
+    <div class="quiz-header">
+        <h1>{{ category.name }}</h1>
+        <div class="progress-bar">
+            <div class="progress-fill" style="width: {{ progress }}%"></div>
+        </div>
+        <p class="question-counter">Question {{ question_num }} of {{ total_questions }}</p>
+    </div>
+
+    <form action="{{ url_for('quiz.submit_quiz') }}" method="POST" id="quizForm">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <div class="question-card">
+            <h2 class="question-text">{{ question.question_text }}</h2>
+
+            <div class="options-list">
+                <label class="option-item">
+                    <input type="radio" name="question_{{ question.id }}" value="A" required>
+                    <span class="option-label">A</span>
+                    <span class="option-text">{{ question.option_a }}</span>
+                </label>
+                <label class="option-item">
+                    <input type="radio" name="question_{{ question.id }}" value="B">
+                    <span class="option-label">B</span>
+                    <span class="option-text">{{ question.option_b }}</span>
+                </label>
+                <label class="option-item">
+                    <input type="radio" name="question_{{ question.id }}" value="C">
+                    <span class="option-label">C</span>
+                    <span class="option-text">{{ question.option_c }}</span>
+                </label>
+                <label class="option-item">
+                    <input type="radio" name="question_{{ question.id }}" value="D">
+                    <span class="option-label">D</span>
+                    <span class="option-text">{{ question.option_d }}</span>
+                </label>
+            </div>
+        </div>
+
+        <div class="quiz-navigation">
+            {% if question_num > 1 %}
+            <a href="{{ url_for('quiz.question', question_num=question_num - 1) }}" class="btn btn-secondary">Previous</a>
+            {% else %}
+            <span></span>
+            {% endif %}
+
+            {% if question_num < total_questions %}
+            <a href="{{ url_for('quiz.question', question_num=question_num + 1) }}" class="btn btn-primary" onclick="saveAnswer()">Next</a>
+            {% else %}
+            <button type="submit" class="btn btn-success">Submit Quiz</button>
+            {% endif %}
+        </div>
+    </form>
+</div>
+
+<script>
+function saveAnswer() {
+    const selected = document.querySelector('input[name="question_{{ question.id }}"]:checked');
+    if (selected) {
+        localStorage.setItem('q{{ question.id }}', selected.value);
+    }
+}
+
+// Restore saved answer
+const saved = localStorage.getItem('q{{ question.id }}');
+if (saved) {
+    const radio = document.querySelector(`input[value="${saved}"]`);
+    if (radio) radio.checked = true;
+}
+</script>
+{% endblock %}

@@ -1,0 +1,219 @@
+{% extends "base.html" %}
+
+{% block title %}Add Question - Admin Dashboard{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="form-container" style="max-width: 700px;">
+        <div class="form-card">
+            <div class="form-header">
+                <h2>Add New Question</h2>
+                <p>Add a new question to the question bank</p>
+            </div>
+
+            <form action="{{ url_for('admin.create_question') }}" method="POST">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                <div class="form-group">
+                    <label for="category">Category *</label>
+                    <select id="category" name="category" class="form-control" required>
+                        <option value="">Select a category</option>
+                        <optgroup label="Aptitude">
+                            <option value="quantitative">Quantitative Aptitude</option>
+                            <option value="logical">Logical Reasoning</option>
+                            <option value="verbal">Verbal Ability</option>
+                        </optgroup>
+                        <optgroup label="Technical">
+                            <option value="c_programming">C Programming</option>
+                            <option value="python">Python</option>
+                            <option value="dbms">DBMS</option>
+                            <option value="os">Operating Systems</option>
+                            <option value="dsa">Data Structures & Algorithms</option>
+                            <option value="networks">Computer Networks</option>
+                            <option value="web">Web Technologies</option>
+                        </optgroup>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="question_text">Question Text *</label>
+                    <textarea id="question_text" name="question_text" class="form-control" placeholder="Enter your question here..." required rows="4"></textarea>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div class="form-group">
+                        <label for="option_a">Option A *</label>
+                        <input type="text" id="option_a" name="option_a" class="form-control" placeholder="Enter option A" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="option_b">Option B *</label>
+                        <input type="text" id="option_b" name="option_b" class="form-control" placeholder="Enter option B" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="option_c">Option C *</label>
+                        <input type="text" id="option_c" name="option_c" class="form-control" placeholder="Enter option C" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="option_d">Option D *</label>
+                        <input type="text" id="option_d" name="option_d" class="form-control" placeholder="Enter option D" required>
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div class="form-group">
+                        <label for="correct_answer">Correct Answer *</label>
+                        <select id="correct_answer" name="correct_answer" class="form-control" required>
+                            <option value="">Select correct answer</option>
+                            <option value="A">Option A</option>
+                            <option value="B">Option B</option>
+                            <option value="C">Option C</option>
+                            <option value="D">Option D</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="difficulty">Difficulty Level *</label>
+                        <select id="difficulty" name="difficulty" class="form-control" required>
+                            <option value="">Select difficulty</option>
+                            <option value="easy">Easy</option>
+                            <option value="medium">Medium</option>
+                            <option value="hard">Hard</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="explanation">Explanation (Optional)</label>
+                    <textarea id="explanation" name="explanation" class="form-control" placeholder="Explain why the correct answer is correct (this will be shown in the review section)" rows="3"></textarea>
+                </div>
+
+                <!-- Preview Section -->
+                <div class="form-group">
+                    <label>Preview</label>
+                    <div id="preview" style="background: var(--light-bg); padding: 1.5rem; border-radius: 12px; min-height: 100px;">
+                        <p id="preview-text" style="margin-bottom: 1rem; color: var(--text-light); font-style: italic;">Question preview will appear here...</p>
+                        <div id="preview-options"></div>
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 1rem;">
+                    <button type="submit" class="btn btn-success btn-block">Add Question</button>
+                    <a href="{{ url_for('admin.dashboard') }}" class="btn btn-outline" style="text-decoration: none; text-align: center;">Cancel</a>
+                </div>
+            </form>
+
+            <div class="form-footer">
+                <p><a href="{{ url_for('admin.list_questions') }}">View All Questions</a> | <a href="{{ url_for('admin.dashboard') }}">Back to Dashboard</a></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bulk Upload Section -->
+    <div class="card" style="max-width: 700px; margin: 2rem auto;">
+        <h3 style="margin-bottom: 1rem;">Bulk Upload Questions</h3>
+        <p style="color: var(--text-light); margin-bottom: 1.5rem;">Upload multiple questions at once using a CSV file.</p>
+
+        <form action="{{ url_for('admin.dashboard') }}" method="POST" enctype="multipart/form-data">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+            <div class="form-group">
+                <label for="csv_file">CSV File</label>
+                <input type="file" id="csv_file" name="csv_file" accept=".csv" class="form-control" style="padding: 0.7rem;">
+            </div>
+
+            <div style="display: flex; gap: 1rem; align-items: center;">
+                <button type="submit" class="btn btn-primary">Upload CSV</button>
+                <a href="#" class="resource-link" onclick="downloadTemplate()">Download Template</a>
+            </div>
+        </form>
+
+        <div style="margin-top: 1.5rem; padding: 1rem; background: var(--light-bg); border-radius: 8px;">
+            <h4 style="margin-bottom: 0.5rem;">CSV Format:</h4>
+            <code style="font-size: 0.85rem; color: var(--text-light);">
+                category,question_text,option_a,option_b,option_c,option_d,correct_answer,difficulty
+            </code>
+        </div>
+    </div>
+</div>
+
+<script>
+// Live preview functionality
+const questionText = document.getElementById('question_text');
+const optionA = document.getElementById('option_a');
+const optionB = document.getElementById('option_b');
+const optionC = document.getElementById('option_c');
+const optionD = document.getElementById('option_d');
+const correctAnswer = document.getElementById('correct_answer');
+
+const previewText = document.getElementById('preview-text');
+const previewOptions = document.getElementById('preview-options');
+
+function updatePreview() {
+    const question = questionText.value;
+    const a = optionA.value;
+    const b = optionB.value;
+    const c = optionC.value;
+    const d = optionD.value;
+    const correct = correctAnswer.value;
+
+    if (question) {
+        previewText.innerHTML = `<strong>Q:</strong> ${question}`;
+        previewText.style.fontStyle = 'normal';
+        previewText.style.color = 'var(--text-dark)';
+    } else {
+        previewText.innerHTML = 'Question preview will appear here...';
+        previewText.style.fontStyle = 'italic';
+        previewText.style.color = 'var(--text-light)';
+    }
+
+    let optionsHTML = '';
+    if (a || b || c || d) {
+        optionsHTML = '<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-top: 1rem;">';
+
+        const options = [
+            { label: 'A', value: a },
+            { label: 'B', value: b },
+            { label: 'C', value: c },
+            { label: 'D', value: d }
+        ];
+
+        options.forEach(opt => {
+            const isCorrect = correct === opt.label;
+            const bgStyle = isCorrect ? 'background: rgba(40, 167, 69, 0.1); border-color: var(--success-color);' : 'background: white;';
+            optionsHTML += `
+                <div style="padding: 0.7rem; border: 2px solid #e0e0e0; border-radius: 8px; ${bgStyle}">
+                    <strong>${opt.label}.</strong> ${opt.value || '...'}
+                    ${isCorrect ? '<span style="color: var(--success-color); margin-left: 0.5rem;">✓</span>' : ''}
+                </div>
+            `;
+        });
+
+        optionsHTML += '</div>';
+    }
+
+    previewOptions.innerHTML = optionsHTML;
+}
+
+questionText.addEventListener('input', updatePreview);
+optionA.addEventListener('input', updatePreview);
+optionB.addEventListener('input', updatePreview);
+optionC.addEventListener('input', updatePreview);
+optionD.addEventListener('input', updatePreview);
+correctAnswer.addEventListener('change', updatePreview);
+
+// Download template function
+function downloadTemplate() {
+    const csv = 'category,question_text,option_a,option_b,option_c,option_d,correct_answer,difficulty,explanation\nquantitative,What is 2 + 2?,3,4,5,6,B,easy,Basic addition';
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'questions_template.csv';
+    a.click();
+    window.URL.revokeObjectURL(url);
+}
+</script>
+{% endblock %}

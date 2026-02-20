@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block title %}Quiz Results - Placement Portal{% endblock %}
+
+{% block content %}
+<div class="container result-container">
+    <div class="result-card">
+        {% if result.percentage >= 70 %}
+            <div class="result-icon success">🏆</div>
+            <h2 class="result-title">Excellent Performance!</h2>
+            <p class="result-subtitle">Congratulations! You've done a great job!</p>
+        {% elif result.percentage >= 50 %}
+            <div class="result-icon average">👍</div>
+            <h2 class="result-title">Good Effort!</h2>
+            <p class="result-subtitle">You're on the right track. Keep practicing!</p>
+        {% else %}
+            <div class="result-icon fail">📚</div>
+            <h2 class="result-title">Keep Learning!</h2>
+            <p class="result-subtitle">Don't give up! Practice makes perfect.</p>
+        {% endif %}
+
+        <div class="score-display">
+            <div class="score-circle" style="--percentage: {{ result.percentage }}">
+                <span class="score-value">{{ result.percentage|round(1) }}%</span>
+            </div>
+        </div>
+
+        <div class="score-details">
+            <div class="detail-item correct">
+                <span class="icon">✓</span>
+                <span class="text">{{ result.score }} Correct</span>
+            </div>
+            <div class="detail-item wrong">
+                <span class="icon">✗</span>
+                <span class="text">{{ result.total_questions - result.score }} Wrong</span>
+            </div>
+            <div class="detail-item total">
+                <span class="icon">📝</span>
+                <span class="text">{{ result.total_questions }} Total Questions</span>
+            </div>
+        </div>
+
+        <div class="category-info">
+            <p>Category: <strong>{{ category.name if category else 'Unknown' }}</strong></p>
+            <p>Date: {{ result.taken_at.strftime('%Y-%m-%d %H:%M') }}</p>
+        </div>
+
+        <div class="result-actions">
+            <a href="{{ url_for('quiz.view_category', category_id=category.id) }}" class="btn btn-primary">Try Again</a>
+            <a href="{{ url_for('quiz.list_categories') }}" class="btn btn-secondary">More Quizzes</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

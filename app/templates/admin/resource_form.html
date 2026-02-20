@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block title %}{% if resource %}Edit Resource{% else %}Add Resource{% endif %} - Admin Dashboard{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="form-container" style="max-width: 700px;">
+        <div class="form-card">
+            <div class="form-header">
+                <h2>{% if resource %}Edit Resource{% else %}Add New Resource{% endif %}</h2>
+                <p>{% if resource %}Update resource details{% else %}Create a new study resource{% endif %}</p>
+            </div>
+
+            <form action="{% if resource %}{{ url_for('admin.edit_resource', resource_id=resource.id) }}{% else %}{{ url_for('admin.create_resource') }}{% endif %}" method="POST">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                <div class="form-group">
+                    <label for="title">Title *</label>
+                    <input type="text" id="title" name="title" class="form-control" placeholder="e.g., Python Basics Tutorial" value="{{ resource.title if resource else '' }}" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="resource_type">Resource Type *</label>
+                    <select id="resource_type" name="resource_type" class="form-control" required>
+                        <option value="">Select type</option>
+                        <option value="article" {% if resource and resource.resource_type == 'article' %}selected{% endif %}>Article</option>
+                        <option value="video" {% if resource and resource.resource_type == 'video' %}selected{% endif %}>Video</option>
+                        <option value="tutorial" {% if resource and resource.resource_type == 'tutorial' %}selected{% endif %}>Tutorial</option>
+                        <option value="documentation" {% if resource and resource.resource_type == 'documentation' %}selected{% endif %}>Documentation</option>
+                        <option value="practice" {% if resource and resource.resource_type == 'practice' %}selected{% endif %}>Practice</option>
+                        <option value="tips" {% if resource and resource.resource_type == 'tips' %}selected{% endif %}>Interview Tips</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="description">Description</label>
+                    <textarea id="description" name="description" class="form-control" rows="3" placeholder="Brief description of this resource">{{ resource.description if resource else '' }}</textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="link">External Link</label>
+                    <input type="url" id="link" name="link" class="form-control" placeholder="https://example.com/resource" value="{{ resource.link if resource else '' }}">
+                </div>
+
+                <div class="form-group">
+                    <label for="content">Content (for text-based resources)</label>
+                    <textarea id="content" name="content" class="form-control" rows="6" placeholder="Enter the content here if this is a text-based resource...">{{ resource.content if resource else '' }}</textarea>
+                </div>
+
+                <div style="display: flex; gap: 1rem;">
+                    <button type="submit" class="btn btn-success btn-block">{% if resource %}Update Resource{% else %}Create Resource{% endif %}</button>
+                    <a href="{{ url_for('admin.list_resources') }}" class="btn btn-outline" style="text-decoration: none; text-align: center;">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

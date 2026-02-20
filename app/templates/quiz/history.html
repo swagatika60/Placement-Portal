@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block title %}Quiz History - Placement Portal{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>Quiz History</h1>
+    <p class="subtitle">View all your past quiz attempts</p>
+
+    {% if results_with_categories %}
+    <div class="history-list">
+        {% for item in results_with_categories %}
+        <div class="history-card">
+            <div class="history-info">
+                <h3>{{ item.category.name if item.category else 'Unknown Category' }}</h3>
+                <p class="history-date">{{ item.result.taken_at.strftime('%Y-%m-%d %H:%M') }}</p>
+            </div>
+            <div class="history-score">
+                <span class="score">{{ item.result.score }}/{{ item.result.total_questions }}</span>
+                <span class="percentage {{ 'high' if item.result.percentage >= 70 else 'medium' if item.result.percentage >= 50 else 'low' }}">
+                    {{ item.result.percentage|round(1) }}%
+                </span>
+            </div>
+            <a href="{{ url_for('quiz.results', result_id=item.result.id) }}" class="btn btn-small">View Details</a>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <div class="empty-icon">📝</div>
+        <h2>No Quiz History</h2>
+        <p>You haven't taken any quizzes yet. Start practicing now!</p>
+        <a href="{{ url_for('quiz.list_categories') }}" class="btn btn-primary">Take a Quiz</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

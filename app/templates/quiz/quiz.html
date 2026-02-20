@@ -1,0 +1,188 @@
+{% extends "base.html" %}
+
+{% block title %}Quiz - {{ category.title() }} - Placement Preparation Portal{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="quiz-container">
+        <!-- Quiz Header -->
+        <div class="quiz-header">
+            <div class="quiz-info">
+                <div class="quiz-info-item">
+                    <div class="quiz-info-label">Category</div>
+                    <div class="quiz-info-value">{{ category.title() }}</div>
+                </div>
+                <div class="quiz-info-item">
+                    <div class="quiz-info-label">Question</div>
+                    <div class="quiz-info-value"><span id="currentQuestion">1</span>/{{ total_questions }}</div>
+                </div>
+            </div>
+            <div class="quiz-timer">
+                ⏱️ <span id="timer">30:00</span>
+            </div>
+        </div>
+
+        <!-- Question Palette -->
+        <div class="question-palette">
+            <h4>Question Navigator</h4>
+            <div class="palette-grid">
+                {% for i in range(1, total_questions + 1) %}
+                <button type="button" class="palette-item {% if i == 1 %}current{% endif %} unanswered" data-question="{{ i }}" onclick="goToQuestion({{ i }})">
+                    {{ i }}
+                </button>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Quiz Form -->
+        <form id="quizForm" action="{{ url_for('quiz.submit_quiz') }}" method="POST">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <input type="hidden" name="category" value="{{ category }}">
+            <input type="hidden" name="time_taken" id="timeTaken" value="">
+
+            {% for question in questions %}
+            <div class="quiz-card question-wrapper" id="question-{{ loop.index }}" {% if loop.index != 1 %}style="display: none;"{% endif %}>
+                <span class="question-number">Question {{ loop.index }}</span>
+                <p class="question-text">{{ question.text }}</p>
+
+                <ul class="options-list">
+                    <li class="option-item">
+                        <input type="radio" class="option-input" name="answer_{{ question.id }}" id="q{{ question.id }}_a" value="A" onchange="markAnswered({{ loop.index }})">
+                        <label class="option-label" for="q{{ question.id }}_a">
+                            <span class="option-marker">A</span>
+                            <span class="option-text">{{ question.option_a }}</span>
+                        </label>
+                    </li>
+                    <li class="option-item">
+                        <input type="radio" class="option-input" name="answer_{{ question.id }}" id="q{{ question.id }}_b" value="B" onchange="markAnswered({{ loop.index }})">
+                        <label class="option-label" for="q{{ question.id }}_b">
+                            <span class="option-marker">B</span>
+                            <span class="option-text">{{ question.option_b }}</span>
+                        </label>
+                    </li>
+                    <li class="option-item">
+                        <input type="radio" class="option-input" name="answer_{{ question.id }}" id="q{{ question.id }}_c" value="C" onchange="markAnswered({{ loop.index }})">
+                        <label class="option-label" for="q{{ question.id }}_c">
+                            <span class="option-marker">C</span>
+                            <span class="option-text">{{ question.option_c }}</span>
+                        </label>
+                    </li>
+                    <li class="option-item">
+                        <input type="radio" class="option-input" name="answer_{{ question.id }}" id="q{{ question.id }}_d" value="D" onchange="markAnswered({{ loop.index }})">
+                        <label class="option-label" for="q{{ question.id }}_d">
+                            <span class="option-marker">D</span>
+                            <span class="option-text">{{ question.option_d }}</span>
+                        </label>
+                    </li>
+                </ul>
+            </div>
+            {% endfor %}
+
+            <!-- Navigation Buttons -->
+            <div class="quiz-navigation">
+                <button type="button" class="btn btn-outline" id="prevBtn" onclick="navigate(-1)" style="display: none;">
+                    ← Previous
+                </button>
+                <button type="button" class="btn btn-primary" id="nextBtn" onclick="navigate(1)">
+                    Next →
+                </button>
+                <button type="submit" class="btn btn-success" id="submitBtn" style="display: none;">
+                    Submit Quiz
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+let currentQuestion = 1;
+const totalQuestions = {{ total_questions }};
+let timeLeft = 30 * 60; // 30 minutes in seconds
+const timerElement = document.getElementById('timer');
+
+// Timer functionality
+const timerInterval = setInterval(function() {
+    if (timeLeft <= 0) {
+        clearInterval(timerInterval);
+        document.getElementById('timeTaken').value = '30:00';
+        document.getElementById('quizForm').submit();
+    } else {
+        timeLeft--;
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        timerElement.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        document.getElementById('timeTaken').value = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    }
+}, 1000);
+
+// Navigation functions
+function navigate(direction) {
+    const newQuestion = currentQuestion + direction;
+
+    if (newQuestion >= 1 && newQuestion <= totalQuestions) {
+        showQuestion(newQuestion);
+    }
+}
+
+function goToQuestion(questionNum) {
+    if (questionNum >= 1 && questionNum <= totalQuestions) {
+        showQuestion(questionNum);
+    }
+}
+
+function showQuestion(questionNum) {
+    // Hide current question
+    document.getElementById(`question-${currentQuestion}`).style.display = 'none';
+
+    // Remove current class from palette
+    document.querySelector(`.palette-item[data-question="${currentQuestion}"]`).classList.remove('current');
+
+    // Update current question
+    currentQuestion = questionNum;
+
+    // Show new question
+    document.getElementById(`question-${currentQuestion}`).style.display = 'block';
+
+    // Add current class to palette
+    document.querySelector(`.palette-item[data-question="${currentQuestion}"]`).classList.add('current');
+
+    // Update question counter
+    document.getElementById('currentQuestion').textContent = currentQuestion;
+
+    // Update navigation buttons
+    updateNavigationButtons();
+}
+
+function updateNavigationButtons() {
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const submitBtn = document.getElementById('submitBtn');
+
+    // Show/hide previous button
+    prevBtn.style.display = currentQuestion > 1 ? 'inline-block' : 'none';
+
+    // Show next or submit button
+    if (currentQuestion === totalQuestions) {
+        nextBtn.style.display = 'none';
+        submitBtn.style.display = 'inline-block';
+    } else {
+        nextBtn.style.display = 'inline-block';
+        submitBtn.style.display = 'none';
+    }
+}
+
+function markAnswered(questionNum) {
+    const paletteItem = document.querySelector(`.palette-item[data-question="${questionNum}"]`);
+    paletteItem.classList.remove('unanswered');
+    paletteItem.classList.add('answered');
+}
+
+// Confirm before leaving page
+window.addEventListener('beforeunload', function(e) {
+    if (document.querySelectorAll('.option-input:checked').length > 0) {
+        e.preventDefault();
+        e.returnValue = '';
+    }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block title %}{{ category.name }} Quiz{% endblock %}
+
+{% block content %}
+<div class="container quiz-container">
+    <div class="quiz-header">
+        <h1>{{ category.name }} Quiz</h1>
+        <p>Answer all questions and submit when done</p>
+    </div>
+
+    <form action="{{ url_for('quiz.take_quiz', category_id=category.id) }}" method="POST">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        {% for question in questions %}
+        <div class="question-card" id="q{{ loop.index }}">
+            <div class="question-number">Question {{ loop.index }}</div>
+            <h3 class="question-text">{{ question.question_text }}</h3>
+
+            <div class="options-list">
+                <label class="option-item">
+                    <input type="radio" name="question_{{ question.id }}" value="A" required>
+                    <span class="option-label">A</span>
+                    <span class="option-text">{{ question.option_a }}</span>
+                </label>
+                <label class="option-item">
+                    <input type="radio" name="question_{{ question.id }}" value="B">
+                    <span class="option-label">B</span>
+                    <span class="option-text">{{ question.option_b }}</span>
+                </label>
+                <label class="option-item">
+                    <input type="radio" name="question_{{ question.id }}" value="C">
+                    <span class="option-label">C</span>
+                    <span class="option-text">{{ question.option_c }}</span>
+                </label>
+                <label class="option-item">
+                    <input type="radio" name="question_{{ question.id }}" value="D">
+                    <span class="option-label">D</span>
+                    <span class="option-text">{{ question.option_d }}</span>
+                </label>
+            </div>
+        </div>
+        {% endfor %}
+
+        <div class="submit-section">
+            <button type="submit" class="btn btn-primary btn-large">Submit Quiz</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

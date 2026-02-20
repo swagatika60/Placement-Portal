@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% block title %}{% if question %}Edit Question{% else %}Add Question{% endif %} - Admin Dashboard{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="form-container" style="max-width: 700px;">
+        <div class="form-card">
+            <div class="form-header">
+                <h2>{% if question %}Edit Question{% else %}Add New Question{% endif %}</h2>
+                <p>{% if question %}Update question details{% else %}Create a new quiz question{% endif %}</p>
+            </div>
+
+            <form action="{% if question %}{{ url_for('admin.edit_question', question_id=question.id) }}{% else %}{{ url_for('admin.create_question') }}{% endif %}" method="POST">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                <div class="form-group">
+                    <label for="category_id">Category *</label>
+                    <select id="category_id" name="category_id" class="form-control" required>
+                        <option value="">Select a category</option>
+                        {% for cat in categories %}
+                        <option value="{{ cat.id }}" {% if question and question.category_id == cat.id %}selected{% endif %}>{{ cat.name }} ({{ cat.type }})</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="question_text">Question Text *</label>
+                    <textarea id="question_text" name="question_text" class="form-control" placeholder="Enter your question here..." required rows="4">{{ question.question_text if question else '' }}</textarea>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div class="form-group">
+                        <label for="option_a">Option A *</label>
+                        <input type="text" id="option_a" name="option_a" class="form-control" placeholder="Enter option A" value="{{ question.option_a if question else '' }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="option_b">Option B *</label>
+                        <input type="text" id="option_b" name="option_b" class="form-control" placeholder="Enter option B" value="{{ question.option_b if question else '' }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="option_c">Option C *</label>
+                        <input type="text" id="option_c" name="option_c" class="form-control" placeholder="Enter option C" value="{{ question.option_c if question else '' }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="option_d">Option D *</label>
+                        <input type="text" id="option_d" name="option_d" class="form-control" placeholder="Enter option D" value="{{ question.option_d if question else '' }}" required>
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div class="form-group">
+                        <label for="correct_answer">Correct Answer *</label>
+                        <select id="correct_answer" name="correct_answer" class="form-control" required>
+                            <option value="">Select correct answer</option>
+                            <option value="A" {% if question and question.correct_answer == 'A' %}selected{% endif %}>Option A</option>
+                            <option value="B" {% if question and question.correct_answer == 'B' %}selected{% endif %}>Option B</option>
+                            <option value="C" {% if question and question.correct_answer == 'C' %}selected{% endif %}>Option C</option>
+                            <option value="D" {% if question and question.correct_answer == 'D' %}selected{% endif %}>Option D</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="difficulty">Difficulty Level *</label>
+                        <select id="difficulty" name="difficulty" class="form-control" required>
+                            <option value="">Select difficulty</option>
+                            <option value="easy" {% if question and question.difficulty == 'easy' %}selected{% endif %}>Easy</option>
+                            <option value="medium" {% if question and question.difficulty == 'medium' %}selected{% endif %}>Medium</option>
+                            <option value="hard" {% if question and question.difficulty == 'hard' %}selected{% endif %}>Hard</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="explanation">Explanation (Optional)</label>
+                    <textarea id="explanation" name="explanation" class="form-control" placeholder="Explain why the correct answer is correct" rows="3">{{ question.explanation if question else '' }}</textarea>
+                </div>
+
+                <div style="display: flex; gap: 1rem;">
+                    <button type="submit" class="btn btn-success btn-block">{% if question %}Update Question{% else %}Add Question{% endif %}</button>
+                    <a href="{{ url_for('admin.list_questions') }}" class="btn btn-outline" style="text-decoration: none; text-align: center;">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

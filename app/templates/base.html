@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Placement Preparation Portal{% endblock %}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="{{ url_for('main.home') }}" class="nav-logo">
+                <span class="logo-text">PP</span>
+                Placement Portal
+            </a>
+            <button class="nav-toggle" id="navToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="{{ url_for('main.home') }}" class="nav-link">Home</a></li>
+                <li><a href="{{ url_for('quiz.list_categories') }}" class="nav-link">Practice</a></li>
+                <li><a href="{{ url_for('main.resources') }}" class="nav-link">Resources</a></li>
+                {% if current_user.is_authenticated %}
+                    {% if current_user.role == 'admin' %}
+                    <li><a href="{{ url_for('admin.dashboard') }}" class="nav-link">Admin</a></li>
+                    {% endif %}
+                    <li><a href="{{ url_for('main.dashboard') }}" class="nav-link">Dashboard</a></li>
+                    <li><a href="{{ url_for('auth.logout') }}" class="nav-link nav-btn logout-btn">Logout</a></li>
+                {% else %}
+                    <li><a href="{{ url_for('auth.login') }}" class="nav-link nav-btn">Login</a></li>
+                    <li><a href="{{ url_for('auth.register') }}" class="nav-link nav-btn register-btn">Register</a></li>
+                {% endif %}
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flash-container">
+                {% for category, message in messages %}
+                    <div class="flash-message flash-{{ category }}">
+                        <span>{{ message }}</span>
+                        <button class="flash-close" onclick="this.parentElement.remove()">&times;</button>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <!-- Main Content -->
+    <main class="main-content">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Placement Portal</h3>
+                    <p>Your gateway to placement success. Practice, learn, and ace your interviews.</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="{{ url_for('main.home') }}">Home</a></li>
+                        <li><a href="{{ url_for('quiz.list_categories') }}">Practice Tests</a></li>
+                        <li><a href="{{ url_for('main.resources') }}">Resources</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Contact</h4>
+                    <p>Email: support@placementportal.com</p>
+                    <p>Phone: +91 1234567890</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Placement Preparation Portal. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Mobile Navigation Toggle
+        document.getElementById('navToggle').addEventListener('click', function() {
+            document.getElementById('navMenu').classList.toggle('active');
+            this.classList.toggle('active');
+        });
+
+        // Auto-hide flash messages
+        setTimeout(function() {
+            document.querySelectorAll('.flash-message').forEach(function(msg) {
+                msg.style.animation = 'slideOut 0.3s ease forwards';
+                setTimeout(function() {
+                    msg.remove();
+                }, 300);
+            });
+        }, 5000);
+    </script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

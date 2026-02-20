@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block title %}{{ category.name }} - Quiz Category{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="category-header">
+        <h1>{{ category.name }}</h1>
+        <p class="category-description">{{ category.description }}</p>
+        <span class="category-badge {{ category.type }}">{{ category.type|title }}</span>
+    </div>
+
+    <div class="quiz-info-card">
+        <div class="info-item">
+            <span class="info-icon">📝</span>
+            <div class="info-details">
+                <h3>{{ questions_count }}</h3>
+                <p>Questions Available</p>
+            </div>
+        </div>
+        <div class="info-item">
+            <span class="info-icon">⏱️</span>
+            <div class="info-details">
+                <h3>10</h3>
+                <p>Questions per Quiz</p>
+            </div>
+        </div>
+        <div class="info-item">
+            <span class="info-icon">🎯</span>
+            <div class="info-details">
+                <h3>{{ previous_attempts|length }}</h3>
+                <p>Your Attempts</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="action-section">
+        <a href="{{ url_for('quiz.start_quiz', category_id=category.id) }}" class="btn btn-primary btn-large">
+            Start Quiz
+        </a>
+    </div>
+
+    {% if previous_attempts %}
+    <div class="previous-attempts">
+        <h2>Your Previous Attempts</h2>
+        <div class="attempts-list">
+            {% for attempt in previous_attempts %}
+            <div class="attempt-card">
+                <div class="attempt-date">{{ attempt.taken_at.strftime('%Y-%m-%d %H:%M') }}</div>
+                <div class="attempt-score">
+                    <span class="score">{{ attempt.score }}/{{ attempt.total_questions }}</span>
+                    <span class="percentage">{{ attempt.percentage|round(1) }}%</span>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

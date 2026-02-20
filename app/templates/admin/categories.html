@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Categories - Admin Dashboard{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="admin-header">
+        <h1>Manage Categories</h1>
+        <p>View and manage quiz categories</p>
+    </div>
+
+    <div style="margin-bottom: 1.5rem;">
+        <a href="{{ url_for('admin.create_category') }}" class="btn btn-primary">Add New Category</a>
+    </div>
+
+    <div class="card">
+        <div style="overflow-x: auto;">
+            <table style="width: 100%; border-collapse: collapse;">
+                <thead>
+                    <tr style="background: var(--light-bg);">
+                        <th style="padding: 1rem; text-align: left; border-radius: 8px 0 0 8px;">Name</th>
+                        <th style="padding: 1rem; text-align: left;">Type</th>
+                        <th style="padding: 1rem; text-align: left;">Description</th>
+                        <th style="padding: 1rem; text-align: left; border-radius: 0 8px 0 0;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for category in categories %}
+                    <tr style="border-bottom: 1px solid var(--light-bg);">
+                        <td style="padding: 1rem; font-weight: 600;">{{ category.name }}</td>
+                        <td style="padding: 1rem;">
+                            <span style="padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.85rem; {% if category.type == 'aptitude' %}background: rgba(102, 126, 234, 0.1); color: var(--primary-color);{% else %}background: rgba(118, 75, 162, 0.1); color: var(--secondary-color);{% endif %}">
+                                {{ category.type|title }}
+                            </span>
+                        </td>
+                        <td style="padding: 1rem; color: var(--text-light);">{{ category.description or 'No description' }}</td>
+                        <td style="padding: 1rem;">
+                            <div style="display: flex; gap: 0.5rem;">
+                                <a href="{{ url_for('admin.edit_category', category_id=category.id) }}" class="btn btn-outline" style="padding: 0.4rem 0.8rem; font-size: 0.85rem;">
+                                    Edit
+                                </a>
+                                <form action="{{ url_for('admin.delete_category', category_id=category.id) }}" method="POST" style="display: inline;" onsubmit="return confirm('Are you sure? This will delete all questions in this category.');">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                    <button type="submit" class="btn btn-danger" style="padding: 0.4rem 0.8rem; font-size: 0.85rem;">
+                                        Delete
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="4" style="padding: 2rem; text-align: center; color: var(--text-light);">
+                            No categories created yet
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div style="margin-top: 1.5rem;">
+        <a href="{{ url_for('admin.dashboard') }}" class="btn btn-outline">Back to Dashboard</a>
+    </div>
+</div>
+{% endblock %}
