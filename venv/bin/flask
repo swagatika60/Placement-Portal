@@ -1,4 +1,4 @@
-#!/Users/aryankumar/project-college/placement-portal/venv/bin/python3.12
+#!/workspaces/Placement-Portal/venv/bin/python
 # -*- coding: utf-8 -*-
 import re
 import sys
